@@ -1,0 +1,48 @@
+# 使用之前构建好的 base+builder 镜像
+FROM mycompany/ragflow-base:latest AS builder
+
+# production stage
+FROM ubuntu:22.04 AS production
+USER root
+WORKDIR /ragflow
+
+# 设置虚拟环境路径
+ENV VIRTUAL_ENV=/ragflow/.venv
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
+
+# 设置 PYTHONPATH
+ENV PYTHONPATH=/ragflow/
+
+# 复制源码
+COPY web web
+COPY api api
+COPY conf conf
+COPY deepdoc deepdoc
+COPY rag rag
+COPY agent agent
+COPY graphrag graphrag
+COPY agentic_reasoning agentic_reasoning
+COPY mcp mcp
+COPY plugin plugin
+COPY pyproject.toml uv.lock ./
+
+# 拷贝配置模板和启动脚本
+COPY docker/service_conf.yaml.template ./conf/service_conf.yaml.template
+COPY docker/entrypoint.sh ./
+RUN chmod +x ./entrypoint*.sh
+
+# 拷贝前端编译结果和版本号
+COPY --from=builder /ragflow/web/dist /ragflow/web/dist
+COPY --from=builder /ragflow/VERSION /ragflow/VERSION
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+# docker build -t mycompany/ragflow-app:latest -f Dockerfile.prod .
+  #docker push mycompany/ragflow-app:latest
+
+# # 构建基础镜像（仅当依赖变更时执行）
+  #docker build -t mycompany/ragflow-base:latest -f Dockerfile.base .
+  #
+  ## 构建最终应用镜像（每次代码更改都执行）
+  #docker build -t mycompany/ragflow-app:latest -f Dockerfile.prod .
