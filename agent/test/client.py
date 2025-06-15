@@ -17,7 +17,6 @@ import argparse
 import os
 from functools import partial
 from agent.canvas import Canvas
-from agent.settings import DEBUG
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -43,7 +42,7 @@ if __name__ == '__main__':
         else:
             print(ans["content"])
 
-        if DEBUG:
+        if False:
             print(canvas.path)
         question = input("\n==================== User =====================\n> ")
         canvas.add_user_input(question)

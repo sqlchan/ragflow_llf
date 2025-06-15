@@ -31,7 +31,7 @@ from .duckduckgo import DuckDuckGo, DuckDuckGoParam
 from .wikipedia import Wikipedia, WikipediaParam
 from .pubmed import PubMed, PubMedParam
 from .arxiv import ArXiv, ArXivParam
-from .google import Google, GoogleParam
+#from .google import Google, GoogleParam
 from .bing import Bing, BingParam
 from .googlescholar import GoogleScholar, GoogleScholarParam
 from .deepl import DeepL, DeepLParam
@@ -92,8 +92,8 @@ __all__ = [
     "PubMedParam",
     "ArXiv",
     "ArXivParam",
-    "Google",
-    "GoogleParam",
+    # "Google",
+    # "GoogleParam",
     "Bing",
     "BingParam",
     "GoogleScholar",
