@@ -16,7 +16,7 @@ RUN --mount=type=bind,from=infiniflow/ragflow_deps:latest,source=/huggingface.co
     tar --exclude='.*' -cf - \
         /huggingface.co/InfiniFlow/text_concat_xgb_v1.0 \
         /huggingface.co/InfiniFlow/deepdoc \
-        | tar -xf - --strip-components=3 -C /ragflow/rag/res/deepdoc
+        | tar -xf - --strip-components=3 -C /ragflow/rag/res/deepdoc 
 RUN --mount=type=bind,from=infiniflow/ragflow_deps:latest,source=/huggingface.co,target=/huggingface.co \
     if [ "$LIGHTEN" != "1" ]; then \
         (tar -cf - \
@@ -161,10 +161,10 @@ RUN --mount=type=cache,id=ragflow_uv,target=/root/.cache/uv,sharing=locked \
         uv sync --python 3.10 --frozen --all-extras; \
     fi
 
-COPY web web
-COPY docs docs
-RUN --mount=type=cache,id=ragflow_npm,target=/root/.npm,sharing=locked \
-    cd web && npm install && npm run build
+#COPY web web
+#COPY docs docs
+#RUN --mount=type=cache,id=ragflow_npm,target=/root/.npm,sharing=locked \
+#    cd web && npm install && npm run build
 
 COPY .git /ragflow/.git
 
@@ -190,31 +190,24 @@ ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
 ENV PYTHONPATH=/ragflow/
 
-#COPY web web
-#COPY api api
-#COPY conf conf
-#COPY deepdoc deepdoc
-#COPY rag rag
-#COPY agent agent
-#COPY graphrag graphrag
-#COPY agentic_reasoning agentic_reasoning
-#COPY pyproject.toml uv.lock ./
-#COPY mcp mcp
-#COPY plugin plugin
+COPY web web
+COPY api api
+COPY conf conf
+COPY deepdoc deepdoc
+COPY rag rag
+COPY agent agent
+COPY graphrag graphrag
+COPY agentic_reasoning agentic_reasoning
+COPY pyproject.toml uv.lock ./
+COPY mcp mcp
+COPY plugin plugin
 
 COPY docker/service_conf.yaml.template ./conf/service_conf.yaml.template
 COPY docker/entrypoint.sh ./
 RUN chmod +x ./entrypoint*.sh
 
 # Copy compiled web pages
-COPY --from=builder /ragflow/web/dist /ragflow/web/dist
+#COPY --from=builder /ragflow/web/dist /ragflow/web/dist
 
-COPY --from=builder /ragflow/VERSION /ragflow/VERSION
-
-
-#ENTRYPOINT ["./entrypoint.sh"]
-
-
-# 然后构建并推送这个基础镜像
-# docker build -t mycompany/ragflow-base:latest -f Dockerfile_1 .
-  #docker push mycompany/ragflow-base:latest
+#COPY --from=builder /ragflow/VERSION /ragflow/VERSION
+ENTRYPOINT ["./entrypoint.sh"]
